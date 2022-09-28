@@ -1,3 +1,3 @@
-from file.parser import get_rc_data_set
+from utils.file import get_rc_data_set
 
 print(get_rc_data_set())
