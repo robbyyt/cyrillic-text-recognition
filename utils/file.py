@@ -1,23 +1,33 @@
-from config import RC_DATA_PATH
 import pandas as pd
 import tensorflow as tf
-
+from config import RC_DATA_PATH
 from utils.nn import training_params
 
 
-def get_rc_data_set(data_set_type='train'):
-    data_folder = fr'{RC_DATA_PATH}\{data_set_type}'
+def get_rc_training_data(percentage_of_data_to_use=0.2):
+    data_folder = fr'{RC_DATA_PATH}\train'
+    validation_split = 1 - percentage_of_data_to_use
     data_set = tf.keras.utils.image_dataset_from_directory(
         data_folder,
-        validation_split=0.99,
+        validation_split=validation_split,
         subset="training",
         seed=123,
         batch_size=training_params.get('batch_size'),
         shuffle=True,
         image_size=training_params.get('img_size'),
-        color_mode='grayscale'
     )
-    print(data_set.class_names)
+    return data_set
+
+
+def get_rc_validation_data():
+    data_folder = fr'{RC_DATA_PATH}\val'
+    data_set = tf.keras.utils.image_dataset_from_directory(
+        data_folder,
+        seed=123,
+        batch_size=training_params.get('batch_size'),
+        shuffle=True,
+        image_size=training_params.get('img_size'),
+    )
     return data_set
 
 
@@ -29,7 +39,3 @@ def get_label2char_map():
         label2chardict[entry.label] = entry.char
 
     return label2chardict
-
-
-if __name__ == "__main__":
-    print(get_rc_data_set())
