@@ -41,15 +41,15 @@ def create_model(num_outputs):
 def train(training_dataset, validation_dataset):
     cached_training_dataset = training_dataset.cache().prefetch(buffer_size=AUTOTUNE)
     cached_validation_dataset = validation_dataset.cache().prefetch(buffer_size=AUTOTUNE)
-    num_output_classes = len(training_dataset.class_names)
-    model = create_model(num_output_classes)
+    max_class = max(training_dataset.class_names, key=lambda x: int(x))
+    model = create_model(int(max_class) + 1)
     checkpoint_path = get_checkpoint_path()
     cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path,
                                                      save_weights_only=True,
                                                      verbose=1)
     model.fit(
         cached_training_dataset,
-        epochs=1,
+        epochs=10,
         verbose=2,
         validation_data=cached_validation_dataset,
         callbacks=[cp_callback]
